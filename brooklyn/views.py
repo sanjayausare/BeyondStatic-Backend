@@ -31,6 +31,8 @@ from django.core import serializers
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 import jwt
+from .models import *
+import json
 
 class LoginAPI(APIView):
 
@@ -43,7 +45,6 @@ class LoginAPI(APIView):
             return Response({"status": "200 OK", "username": username, "token": token})
         else:
             return Response({"status": "400 Bad Request", "message": "Invalid Password/Username"})
-        
 
 class RegisterAPI(APIView):
     def post(self, request):
