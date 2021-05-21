@@ -33,21 +33,35 @@ from django.contrib.auth.models import User
 import jwt
 from .models import *
 import json
+from datetime import datetime, timedelta
 
 class LoginAPI(APIView):
 
     def post(self, request):
+        JWT_SECRET = 'HarryMaguire'
+        JWT_ALGORITHM = 'HS256'
+        JWT_EXP_DELTA_SECONDS = 2628000
         username = request.data['username']
         password = request.data['password']
         user = authenticate(username=username, password=password)
         if user is not None:
-            token = ""
-            return Response({"status": "200 OK", "username": username, "token": token})
+            payload = {
+                'user_id': user.id,
+                'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP_DELTA_SECONDS)
+                }
+            
+            jwt_token = jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
+            jwt_token = jwt_token.decode('utf-8')
+            
+            return Response({"status": "200 OK", "username": username, "token": jwt_token})
         else:
             return Response({"status": "400 Bad Request", "message": "Invalid Password/Username"})
 
 class RegisterAPI(APIView):
     def post(self, request):
+        JWT_SECRET = 'HarryMaguire'
+        JWT_ALGORITHM = 'HS256'
+        JWT_EXP_DELTA_SECONDS = 2628000
         username = request.data['username']
         password = request.data['password']
         email = request.data['email']
@@ -58,8 +72,15 @@ class RegisterAPI(APIView):
             user = User.objects.create_user(username, email, password, first_name=fname,last_name=lname)
             user.save()
             try:
-                token = ""
-                return Response({"status": "200 OK", "username": username, "fname": fname, "lname": lname, "email": email, "token": token})
+                payload = {
+                'user_id': user.id,
+                'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP_DELTA_SECONDS)
+                }
+            
+                jwt_token = jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
+                jwt_token = jwt_token.decode('utf-8')
+                
+                return Response({"status": "200 OK", "username": username, "fname": fname, "lname": lname, "email": email, "token": jwt_token})
             except:
                 return Response({"status": "400 Bad Request", "message": "Invalid Password/Username"})
         except:
