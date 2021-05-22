@@ -85,6 +85,6 @@ class RegisterAPI(APIView):
             except:
                 return Response({"status": "400 Bad Request", "message": "Invalid Password/Username"})
         except:
-            return Response({"status": "500 Internal Server Error", "message": "Some error on server side."})
+            return Response({"status": "403 User already exists", "message": "User already exists."})
     
         
