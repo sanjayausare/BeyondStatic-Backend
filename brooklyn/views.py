@@ -35,6 +35,8 @@ from .models import *
 import json
 from datetime import datetime, timedelta
 
+
+
 class LoginAPI(APIView):
 
     def post(self, request):
@@ -51,7 +53,6 @@ class LoginAPI(APIView):
                 }
             
             jwt_token = jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
-            jwt_token = jwt_token.decode('utf-8')
             
             return Response({"status": "200 OK", "username": username, "token": jwt_token})
         else:
