@@ -79,7 +79,6 @@ class RegisterAPI(APIView):
                 }
             
                 jwt_token = jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
-                jwt_token = jwt_token.decode('utf-8')
                 
                 return Response({"status": "200 OK", "username": username, "fname": fname, "lname": lname, "email": email, "token": jwt_token})
             except:
