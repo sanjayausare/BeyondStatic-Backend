@@ -86,4 +86,37 @@ class RegisterAPI(APIView):
         except:
             return Response({"status": "403 User already exists", "message": "User already exists."})
     
+class ProfileAPI(APIView):
+    def get(self, request, username):
+        try:
+            thatUser = User.objects.filter(username=username)[0]
+            print(thatUser.first_name)
+            resp = {
+                "status": "200 OK",
+                "username": username,
+                "first_name": thatUser.first_name,
+                "last_name": thatUser.last_name,
+                "email": thatUser.email
+            }
+            return Response(resp)
+        except:
+            return Response({"status": "404 Not Found", "message": "username does not exist."})
         
+    def put(self, request, username):
+        try:
+            email = request.data['email']
+            first_name = request.data['first_name']
+            last_name = request.data['last_name']
+            User.objects.filter(username=username).update(email=email, first_name=first_name, last_name=last_name)
+            thatUser = User.objects.filter(username=username)[0]
+            resp = {
+                "status": "200 OK",
+                "message": "successfully updated.",
+                "username": username,
+                "first_name": thatUser.first_name,
+                "last_name": thatUser.last_name,
+                "email": thatUser.email
+            }
+            return Response(resp)
+        except:
+            return Response({"status": "404 Not Found", "message": "username does not exist."})
