@@ -90,7 +90,6 @@ class ProfileAPI(APIView):
     def get(self, request, username):
         try:
             thatUser = User.objects.filter(username=username)[0]
-            print(thatUser.first_name)
             resp = {
                 "status": "200 OK",
                 "username": username,
@@ -116,6 +115,39 @@ class ProfileAPI(APIView):
                 "first_name": thatUser.first_name,
                 "last_name": thatUser.last_name,
                 "email": thatUser.email
+            }
+            return Response(resp)
+        except:
+            return Response({"status": "404 Not Found", "message": "username does not exist."})
+        
+class ProjectAPI(APIView):
+    def post(self, request, username):
+        try:
+            user = User.objects.filter(username=username)[0]
+            ProjectName = request.data['ProjectName']
+            EndpointURL = request.data['EndpointURL']
+            Field1Name = request.data['Field1Name']
+            Field2Name = request.data['Field2Name']
+            Field3Name = request.data['Field3Name']
+            Field4Name = request.data['Field4Name']
+            Field5Name = request.data['Field5Name']
+            
+            try:
+                addProj = Project(user=user, ProjectName=ProjectName, EndpointURL=EndpointURL, Field1Name=Field1Name, Field2Name=Field2Name, Field3Name=Field3Name, Field4Name=Field4Name, Field5Name=Field5Name)
+                addProj.save()
+            except:
+                return Response({"status": "500 Internal Server Error", "message": "database went through an error."})
+            
+            resp = {
+                "username": addProj.user.username,
+                "id": addProj.id,
+                "ProjectName": addProj.ProjectName,
+                "EndpointURL": addProj.EndpointURL,
+                "Field1Name": addProj.Field1Name,
+                "Field2Name": addProj.Field2Name,
+                "Field3Name": addProj.Field3Name,
+                "Field4Name": addProj.Field4Name,
+                "Field5Name": addProj.Field5Name,
             }
             return Response(resp)
         except:
