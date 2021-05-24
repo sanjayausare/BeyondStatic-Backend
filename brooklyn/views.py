@@ -152,3 +152,24 @@ class ProjectAPI(APIView):
             return Response(resp)
         except:
             return Response({"status": "404 Not Found", "message": "username does not exist."})
+        
+    def get(self, request, username):
+        try:
+            thisUser = User.objects.filter(username=username)[0]
+            requiredProjects = Project.objects.filter(user=thisUser)
+            resp = []
+            for reqProject in requiredProjects:
+                respo = {
+                    "id": reqProject.id,
+                    "ProjectName": reqProject.ProjectName,
+                    "EndpointURL": reqProject.EndpointURL,
+                    "Field1Name": reqProject.Field1Name,
+                    "Field2Name": reqProject.Field2Name,
+                    "Field3Name": reqProject.Field3Name,
+                    "Field4Name": reqProject.Field4Name,
+                    "Field5Name": reqProject.Field5Name,
+                }
+                resp.append(respo)
+            return Response(resp)
+        except:
+            return Response({"status": "404 Not Found", "message": "username does not exist."})
