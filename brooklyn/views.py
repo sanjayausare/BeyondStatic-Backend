@@ -34,6 +34,7 @@ import jwt
 from .models import *
 import json
 from datetime import datetime, timedelta
+from django.http import HttpResponse, HttpResponseRedirect
 
 
 
@@ -229,5 +230,38 @@ class ProjectInstanceAPI(APIView):
         
 class AddInstanceAPI(APIView):
     def get(self, request, message):
+        message = message.split('zlatan')
+        decryptedMessage = []
+        for m in message:
+            mess = ""
+            chunks = [m[i:i+4] for i in range(0, len(m), 4)]
+            for chunk in chunks:
+                mess += chr(int(chunk))
+            decryptedMessage.append(mess)
         
-        return message
+        username = decryptedMessage[0]
+        projectID = int(decryptedMessage[1])
+        field1 = decryptedMessage[2]
+        field2 = decryptedMessage[3]
+        field3 = decryptedMessage[4]
+        field4 = decryptedMessage[5]
+        field5 = decryptedMessage[6]
+        
+        try:
+            user = User.objects.filter(username=username)[0]
+            print(user.username)
+            Project2 = Project.objects.filter(id=projectID)[0]
+        except:
+            #incorrect user/project
+            return Response({"status": "404 Not Found", "message": "project/user does not exist."})
+        
+        try:
+            newProjectObjectInstance = ProjectObject(Project=Project2, user=user, Field1=field1, Field2=field2, Field3=field3, Field4=field4, Field5=field5)
+            newProjectObjectInstance.save()
+        except:
+            #ServerError
+            return Response({"status": "500 internal server error", "message": "internal server error."})
+        
+        endpoint = Project2.EndpointURL
+        
+        return HttpResponseRedirect(endpoint)

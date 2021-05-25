@@ -15,9 +15,8 @@ const padCharacter = (char) => {
     return c;
 }
 
-const encryptAndSend = (endpointURL, username, projectID, field1='', field2='', field3='', field4='', field5='') => {
+const encryptAndSend = (username, projectID, field1='', field2='', field3='', field4='', field5='') => {
     
-    endpointURL = String(endpointURL)
     username = String(username)
     projectID = String(projectID)
     field1 = String(field1)
@@ -26,11 +25,6 @@ const encryptAndSend = (endpointURL, username, projectID, field1='', field2='', 
     field4 = String(field4)
     field5 = String(field5)
 
-    let encEndpointURL = "";
-    for(let i=0; i<endpointURL.length; i++)
-    {
-        encEndpointURL += padCharacter(endpointURL[i])
-    }
     let encUsername = "";
     for(let i=0; i<username.length; i++)
     {
@@ -67,16 +61,18 @@ const encryptAndSend = (endpointURL, username, projectID, field1='', field2='', 
         encField5 += padCharacter(field5[i])
     }
 
-    let encURL = encEndpointURL + "zlatan" + encUsername + "zlatan" + encProjectID + "zlatan" + encField1 + "zlatan" + encField2 + "zlatan" + encField3 + "zlatan" + encField4 + "zlatan" + encField5;
+    let encURL = encUsername + "zlatan" + encProjectID + "zlatan" + encField1 + "zlatan" + encField2 + "zlatan" + encField3 + "zlatan" + encField4 + "zlatan" + encField5;
     encURL = "http://127.0.0.1:8000/api/addInstance/" + encURL;
 
-    let a = document.createElement('a');
-    a.id = "sendMeMessage";
-    a.href = encURL;
-    document.body.appendChild(a);
-    $("#sendMeMessage")[0].click();
+    // let a = document.createElement('a');
+    // a.id = "sendMeMessage";
+    // a.href = encURL;
+    // document.body.appendChild(a);
+    // $("#sendMeMessage")[0].click();
 
     //you need to have jQuery installed
+
+    return encURL
 }
 
 

@@ -24,6 +24,7 @@ class Project(models.Model):
     
 class ProjectObject(models.Model):
     Project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     Field1 = models.CharField(max_length=10000000, default=' ')
     Field2 = models.CharField(max_length=10000000, default=' ')
     Field3 = models.CharField(max_length=10000000, default=' ')
