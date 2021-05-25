@@ -106,6 +106,8 @@ class ProfileAPI(APIView):
             email = request.data['email']
             first_name = request.data['first_name']
             last_name = request.data['last_name']
+            if len(User.objects.filter(username=username)) == 0:
+                return Response({"status": "404 Not Found", "message": "username does not exist."})
             User.objects.filter(username=username).update(email=email, first_name=first_name, last_name=last_name)
             thatUser = User.objects.filter(username=username)[0]
             resp = {
@@ -173,3 +175,55 @@ class ProjectAPI(APIView):
             return Response(resp)
         except:
             return Response({"status": "404 Not Found", "message": "username does not exist."})
+        
+class ProjectInstanceAPI(APIView):
+    def get(self, request, id):
+        try:
+            reqProject = Project.objects.filter(id=id)[0]
+        except:
+            return Response({"status": "404 Not Found", "message": "project does not exist."})
+        resp = {
+            "id": reqProject.id,
+            "ProjectName": reqProject.ProjectName,
+            "EndpointURL": reqProject.EndpointURL,
+            "Field1Name": reqProject.Field1Name,
+            "Field2Name": reqProject.Field2Name,
+            "Field3Name": reqProject.Field3Name,
+            "Field4Name": reqProject.Field4Name,
+            "Field5Name": reqProject.Field5Name,
+        }
+        return Response(resp)
+    
+    def put(self, request, id):
+        if (len(Project.objects.filter(id=id))) == 0:
+            return Response({"status": "404 Not Found", "message": "project does not exist."})
+        ProjectName = request.data['ProjectName']
+        EndpointURL = request.data['EndpointURL']
+        Field1Name = request.data['Field1Name']
+        Field2Name = request.data['Field2Name']
+        Field3Name = request.data['Field3Name']
+        Field4Name = request.data['Field4Name']
+        Field5Name = request.data['Field5Name']
+        Project.objects.filter(id=id).update(ProjectName=ProjectName, EndpointURL=EndpointURL, Field1Name=Field1Name, Field2Name=Field2Name, Field3Name=Field3Name, Field4Name=Field4Name, Field5Name=Field5Name)
+        reqProject = Project.objects.filter(id=id)[0]
+        resp = {
+            "id": reqProject.id,
+            "ProjectName": reqProject.ProjectName,
+            "EndpointURL": reqProject.EndpointURL,
+            "Field1Name": reqProject.Field1Name,
+            "Field2Name": reqProject.Field2Name,
+            "Field3Name": reqProject.Field3Name,
+            "Field4Name": reqProject.Field4Name,
+            "Field5Name": reqProject.Field5Name,
+        }
+        return Response(resp)
+    
+    def delete(self, request, id):
+        if (len(Project.objects.filter(id=id))) == 0:
+            return Response({"status": "404 Not Found", "message": "project does not exist."})
+        try:
+            Project.objects.filter(id=id).delete()
+            return Response({"status": "202 Accepted", "message": "project deleted successfully."})
+        except:
+            return Response({"status": "500 Internal Server Error", "message": "database error."})
+        
