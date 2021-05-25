@@ -227,3 +227,7 @@ class ProjectInstanceAPI(APIView):
         except:
             return Response({"status": "500 Internal Server Error", "message": "database error."})
         
+class AddInstanceAPI(APIView):
+    def get(self, request, message):
+        
+        return message
