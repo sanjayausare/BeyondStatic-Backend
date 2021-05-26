@@ -25,7 +25,7 @@ SECRET_KEY = 'n1zs#cfvbiw$u$sbz@2cndefoqp02z%xgdn7yvl%ef3nt%h-43'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'brooklyn',
-    # 'rest_framework.authtoken',
+    'corsheaders'
 ]
 
 
@@ -52,6 +52,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -80,6 +81,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'beyondstatic.wsgi.application'
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Database
