@@ -164,6 +164,7 @@ class ProjectAPI(APIView):
             for reqProject in requiredProjects:
                 respo = {
                     "id": reqProject.id,
+                    "username": reqProject.user.username,
                     "ProjectName": reqProject.ProjectName,
                     "EndpointURL": reqProject.EndpointURL,
                     "Field1Name": reqProject.Field1Name,
@@ -186,6 +187,7 @@ class ProjectInstanceAPI(APIView):
         resp = {
             "id": reqProject.id,
             "ProjectName": reqProject.ProjectName,
+            "username": reqProject.user.username,
             "EndpointURL": reqProject.EndpointURL,
             "Field1Name": reqProject.Field1Name,
             "Field2Name": reqProject.Field2Name,
@@ -210,6 +212,7 @@ class ProjectInstanceAPI(APIView):
         resp = {
             "id": reqProject.id,
             "ProjectName": reqProject.ProjectName,
+            "username": reqProject.user.username,
             "EndpointURL": reqProject.EndpointURL,
             "Field1Name": reqProject.Field1Name,
             "Field2Name": reqProject.Field2Name,
@@ -265,3 +268,55 @@ class AddInstanceAPI(APIView):
         endpoint = Project2.EndpointURL
         
         return HttpResponseRedirect(endpoint)
+    
+
+class ProjectObjectsAPI(APIView):
+    def get(self, request, projectID):
+        try:
+            thatProject = Project.objects.filter(id=projectID)[0]
+        except:
+            return Response({"status": "404 Not Found", "message": "project does not exist."})
+        allObjectInstances = ProjectObject.objects.filter(Project=thatProject)
+        requiredInstances = []
+        for objectInstance in allObjectInstances:
+            resp = {
+            "id": objectInstance.id,
+            "ProjectID": objectInstance.Project.id,
+            "UserID": objectInstance.user.username,
+            "Field1": objectInstance.Field1,
+            "Field2": objectInstance.Field2,
+            "Field3": objectInstance.Field3,
+            "Field4": objectInstance.Field4,
+            "Field5": objectInstance.Field5,
+            "dateTime": str(objectInstance.DateTime)
+            }
+            requiredInstances.append(resp)
+        return Response(requiredInstances)
+    
+class ProjectObjectAPI(APIView):
+    def get(self, request, projectobjectID):
+        try:
+            thatProjectObject = ProjectObject.objects.filter(id=projectobjectID)[0]
+        except:
+            return Response({"status": "404 Not Found", "message": "project object does not exist."})
+        resp = {
+            "id": thatProjectObject.id,
+            "projectID": thatProjectObject.Project.id,
+            "username": thatProjectObject.user.username,
+            "field1": thatProjectObject.Field1,
+            "field2": thatProjectObject.Field2,
+            "field3": thatProjectObject.Field3,
+            "field4": thatProjectObject.Field4,
+            "field5": thatProjectObject.Field5,
+            "dateTime": str(thatProjectObject.DateTime)
+        }
+        return Response(resp)
+    
+    def delete(self, request, projectobjectID):
+        if len(ProjectObject.objects.filter(id=projectobjectID)) == 0:
+            return Response({"status": "404 Not Found", "message": "project object does not exist."})
+        try:
+            ProjectObject.objects.filter(id=projectobjectID).delete()
+            return Response({"status": "202 Accepted", "message": "project object deleted successfully."})
+        except:
+            return Response({"status": "500 Internal Server Error", "message": "database went through an error."})
