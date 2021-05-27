@@ -20,7 +20,17 @@ def validateJWT(request):
         return True
     except:
         return False
-
+    
+class TokenCheckAPI(APIView):
+    
+    def post(self, request):
+        token = request.data['token']
+        try:
+            validation = jwt.decode(token, 'HarryMaguire', algorithms="HS256")
+            return Response({"status": True})
+        except:
+            return Response({"status": False})
+        
 class LoginAPI(APIView):
 
     def post(self, request):
