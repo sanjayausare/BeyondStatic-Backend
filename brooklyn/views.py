@@ -36,7 +36,8 @@ class LoginAPI(APIView):
     def post(self, request):
         JWT_SECRET = 'HarryMaguire'
         JWT_ALGORITHM = 'HS256'
-        JWT_EXP_DELTA_SECONDS = 2628000
+        # JWT_EXP_DELTA_SECONDS = 2628000
+        JWT_EXP_DELTA_SECONDS = 10
         username = request.data['username']
         password = request.data['password']
         user = authenticate(username=username, password=password)
