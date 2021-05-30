@@ -13,11 +13,13 @@ class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     ProjectName = models.CharField(max_length=100)
     EndpointURL = models.CharField(max_length=14000)
-    Field1Name = models.CharField(max_length=50, default=' ')
-    Field2Name = models.CharField(max_length=50, default=' ')
-    Field3Name = models.CharField(max_length=50, default=' ')
-    Field4Name = models.CharField(max_length=50, default=' ')
-    Field5Name = models.CharField(max_length=50, default=' ')
+    Description = models.CharField(max_length=10000, default='')
+    Field1Name = models.CharField(max_length=50, default='')
+    Field2Name = models.CharField(max_length=50, default='')
+    Field3Name = models.CharField(max_length=50, default='')
+    Field4Name = models.CharField(max_length=50, default='')
+    Field5Name = models.CharField(max_length=50, default='')
+    ProjectStatus = models.BooleanField(default=True)
     
     def __str__(self):
         return self.user.username + " " + self.ProjectName

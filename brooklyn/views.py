@@ -37,7 +37,7 @@ class LoginAPI(APIView):
         JWT_SECRET = 'HarryMaguire'
         JWT_ALGORITHM = 'HS256'
         # JWT_EXP_DELTA_SECONDS = 2628000
-        JWT_EXP_DELTA_SECONDS = 10
+        JWT_EXP_DELTA_SECONDS = 2628000
         username = request.data['username']
         password = request.data['password']
         user = authenticate(username=username, password=password)
@@ -133,9 +133,10 @@ class ProjectAPI(APIView):
             Field3Name = request.data['Field3Name']
             Field4Name = request.data['Field4Name']
             Field5Name = request.data['Field5Name']
+            Description = request.data['Description']
             
             try:
-                addProj = Project(user=user, ProjectName=ProjectName, EndpointURL=EndpointURL, Field1Name=Field1Name, Field2Name=Field2Name, Field3Name=Field3Name, Field4Name=Field4Name, Field5Name=Field5Name)
+                addProj = Project(user=user, ProjectName=ProjectName, EndpointURL=EndpointURL, Field1Name=Field1Name, Field2Name=Field2Name, Field3Name=Field3Name, Field4Name=Field4Name, Field5Name=Field5Name, Description=Description)
                 addProj.save()
             except:
                 return Response({"status": "500 Internal Server Error", "message": "database went through an error."})
@@ -150,6 +151,8 @@ class ProjectAPI(APIView):
                 "Field3Name": addProj.Field3Name,
                 "Field4Name": addProj.Field4Name,
                 "Field5Name": addProj.Field5Name,
+                "Description": addProj.Description,
+                "ProjectStatus": addProj.ProjectStatus
             }
             return Response(resp)
         except:
@@ -173,6 +176,8 @@ class ProjectAPI(APIView):
                     "Field3Name": reqProject.Field3Name,
                     "Field4Name": reqProject.Field4Name,
                     "Field5Name": reqProject.Field5Name,
+                    "Description": reqProject.Description,
+                    "ProjectStatus": reqProject.ProjectStatus
                 }
                 resp.append(respo)
             return Response(resp)
@@ -197,6 +202,8 @@ class ProjectInstanceAPI(APIView):
             "Field3Name": reqProject.Field3Name,
             "Field4Name": reqProject.Field4Name,
             "Field5Name": reqProject.Field5Name,
+            "ProjectStatus": reqProject.ProjectStatus,
+            "Description": reqProject.Description
         }
         return Response(resp)
     
@@ -212,7 +219,9 @@ class ProjectInstanceAPI(APIView):
         Field3Name = request.data['Field3Name']
         Field4Name = request.data['Field4Name']
         Field5Name = request.data['Field5Name']
-        Project.objects.filter(id=id).update(ProjectName=ProjectName, EndpointURL=EndpointURL, Field1Name=Field1Name, Field2Name=Field2Name, Field3Name=Field3Name, Field4Name=Field4Name, Field5Name=Field5Name)
+        Description = request.data['Description']
+        ProjectStatus = request.data['ProjectStatus']
+        Project.objects.filter(id=id).update(Description=Description, ProjectStatus=ProjectStatus, ProjectName=ProjectName, EndpointURL=EndpointURL, Field1Name=Field1Name, Field2Name=Field2Name, Field3Name=Field3Name, Field4Name=Field4Name, Field5Name=Field5Name)
         reqProject = Project.objects.filter(id=id)[0]
         resp = {
             "id": reqProject.id,
@@ -224,6 +233,8 @@ class ProjectInstanceAPI(APIView):
             "Field3Name": reqProject.Field3Name,
             "Field4Name": reqProject.Field4Name,
             "Field5Name": reqProject.Field5Name,
+            "Description": reqProject.Description,
+            "ProjectStatus": reqProject.ProjectStatus
         }
         return Response(resp)
     
@@ -240,8 +251,6 @@ class ProjectInstanceAPI(APIView):
         
 class AddInstanceAPI(APIView):
     def get(self, request, message):
-        if validateJWT(request) is False:
-            return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
         message = message.split('zlatan')
         decryptedMessage = []
         for m in message:
@@ -263,6 +272,9 @@ class AddInstanceAPI(APIView):
             user = User.objects.filter(username=username)[0]
             print(user.username)
             Project2 = Project.objects.filter(id=projectID)[0]
+            
+            if Project2.ProjectStatus is False:
+                return HttpResponseRedirect(Project2.EndpointURL)
         except:
             #incorrect user/project
             return Response({"status": "404 Not Found", "message": "project/user does not exist."})
@@ -272,7 +284,7 @@ class AddInstanceAPI(APIView):
             newProjectObjectInstance.save()
         except:
             #ServerError
-            return Response({"status": "500 internal server error", "message": "internal server error."})
+            return HttpResponseRedirect(Project2.EndpointURL)
         
         endpoint = Project2.EndpointURL
         
