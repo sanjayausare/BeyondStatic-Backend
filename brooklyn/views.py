@@ -166,6 +166,10 @@ class ProjectAPI(APIView):
             requiredProjects = Project.objects.filter(user=thisUser)
             resp = []
             for reqProject in requiredProjects:
+                try:
+                    totalMessages = len(ProjectObject.objects.filter(Project=reqProject))
+                except:
+                    totalMessages = 0
                 respo = {
                     "id": reqProject.id,
                     "username": reqProject.user.username,
@@ -177,7 +181,8 @@ class ProjectAPI(APIView):
                     "Field4Name": reqProject.Field4Name,
                     "Field5Name": reqProject.Field5Name,
                     "Description": reqProject.Description,
-                    "ProjectStatus": reqProject.ProjectStatus
+                    "ProjectStatus": reqProject.ProjectStatus,
+                    "totalMessages": totalMessages
                 }
                 resp.append(respo)
             return Response(resp)
@@ -192,6 +197,10 @@ class ProjectInstanceAPI(APIView):
             reqProject = Project.objects.filter(id=id)[0]
         except:
             return Response({"status": "404 Not Found", "message": "project does not exist."})
+        try:
+            totalMessages = len(ProjectObject.objects.filter(Project=reqProject))
+        except:
+            totalMessages = 0
         resp = {
             "id": reqProject.id,
             "ProjectName": reqProject.ProjectName,
@@ -203,7 +212,8 @@ class ProjectInstanceAPI(APIView):
             "Field4Name": reqProject.Field4Name,
             "Field5Name": reqProject.Field5Name,
             "ProjectStatus": reqProject.ProjectStatus,
-            "Description": reqProject.Description
+            "Description": reqProject.Description,
+            "totalMessages": totalMessages
         }
         return Response(resp)
     
