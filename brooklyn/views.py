@@ -380,46 +380,99 @@ class ChartDataAPI(APIView):
             return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
         
         # get all instances
-        #try:    
-        thisUser = User.objects.filter(username=username)[0]
-        allMessages = ProjectObject.objects.filter(user=thisUser)
-        xAxis = ["1", "2", "3", "4", "5", "6"]
-        currentDateTime = datetime.now()
-        dt1 = currentDateTime - timedelta(30*6)
-        dt2 = currentDateTime - timedelta(30*5)
-        dt3 = currentDateTime - timedelta(30*4)
-        dt4 = currentDateTime - timedelta(30*3)
-        dt5 = currentDateTime - timedelta(30*2)
-        dt6 = currentDateTime - timedelta(30*1)
+        try:    
+            thisUser = User.objects.filter(username=username)[0]
+            allMessages = ProjectObject.objects.filter(user=thisUser)
+            xAxis = ["1", "2", "3", "4", "5", "6"]
+            currentDateTime = datetime.now()
+            dt1 = currentDateTime - timedelta(30*6)
+            dt2 = currentDateTime - timedelta(30*5)
+            dt3 = currentDateTime - timedelta(30*4)
+            dt4 = currentDateTime - timedelta(30*3)
+            dt5 = currentDateTime - timedelta(30*2)
+            dt6 = currentDateTime - timedelta(30*1)
+            
+            dt1 = utc.localize(dt1).replace(tzinfo=utc)
+            dt2 = utc.localize(dt2).replace(tzinfo=utc)
+            dt3 = utc.localize(dt3).replace(tzinfo=utc)
+            dt4 = utc.localize(dt4).replace(tzinfo=utc)
+            dt5 = utc.localize(dt5).replace(tzinfo=utc)
+            dt6 = utc.localize(dt6).replace(tzinfo=utc)
+            currentDateTime = utc.localize(currentDateTime).replace(tzinfo=utc)
+            
+            c1=0
+            c2=0
+            c3=0
+            c4=0
+            c5=0
+            c6=0
+            
+            for message in allMessages:
+                if(message.DateTime>=dt1 and message.DateTime<=dt2):
+                    c1 += 1
+                elif (message.DateTime>=dt2 and message.DateTime<=dt3):
+                    c2 += 1
+                elif (message.DateTime>=dt3 and message.DateTime<=dt4):
+                    c3 += 1
+                elif (message.DateTime>=dt4 and message.DateTime<=dt5):
+                    c4 += 1
+                elif (message.DateTime>=dt5 and message.DateTime<=dt6):
+                    c5 += 1
+                elif (message.DateTime>=dt6 and message.DateTime<=currentDateTime):
+                    c6 += 1
+            yAxis = [c1, c2, c3, c4, c5, c6]
+            return Response({"status": "200 OK", "xAxis": xAxis, "yAxis": yAxis})
+        except:
+            return Response({"status": "404 Not Found", "message": "User does not exist"})
         
-        dt1 = utc.localize(dt1).replace(tzinfo=utc)
-        dt2 = utc.localize(dt2).replace(tzinfo=utc)
-        dt3 = utc.localize(dt3).replace(tzinfo=utc)
-        dt4 = utc.localize(dt4).replace(tzinfo=utc)
-        dt5 = utc.localize(dt5).replace(tzinfo=utc)
-        dt6 = utc.localize(dt6).replace(tzinfo=utc)
-        currentDateTime = utc.localize(currentDateTime).replace(tzinfo=utc)
+class ProjectChartDataAPI(APIView):
+    def get(self, request, username, projectID):
+        if validateJWT(request) is False:
+            return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
         
-        c1=0
-        c2=0
-        c3=0
-        c4=0
-        c5=0
-        c6=0
-        for message in allMessages:
-            if(message.DateTime>=dt1 and message.DateTime<=dt2):
-                c1 += 1
-            elif (message.DateTime>=dt2 and message.DateTime<=dt3):
-                c2 += 1
-            elif (message.DateTime>=dt3 and message.DateTime<=dt4):
-                c3 += 1
-            elif (message.DateTime>=dt4 and message.DateTime<=dt5):
-                c4 += 1
-            elif (message.DateTime>=dt5 and message.DateTime<=dt6):
-                c5 += 1
-            elif (message.DateTime>=dt6 and message.DateTime<=currentDateTime):
-                c6 += 1
-        yAxis = [c1, c2, c3, c4, c5, c6]
-        return Response({"status": "200 OK", "xAxis": xAxis, "yAxis": yAxis})
-        #except:
-        #    return Response({"status": "404 Not Found", "message": "User does not exist"})
+        # get all instances
+        try:    
+            thisUser = User.objects.filter(username=username)[0]
+            thisProject = Project.objects.filter(id=projectID)[0]
+            allMessages = ProjectObject.objects.filter(user=thisUser, Project=thisProject)
+            xAxis = ["1", "2", "3", "4", "5", "6"]
+            currentDateTime = datetime.now()
+            dt1 = currentDateTime - timedelta(30*6)
+            dt2 = currentDateTime - timedelta(30*5)
+            dt3 = currentDateTime - timedelta(30*4)
+            dt4 = currentDateTime - timedelta(30*3)
+            dt5 = currentDateTime - timedelta(30*2)
+            dt6 = currentDateTime - timedelta(30*1)
+            
+            dt1 = utc.localize(dt1).replace(tzinfo=utc)
+            dt2 = utc.localize(dt2).replace(tzinfo=utc)
+            dt3 = utc.localize(dt3).replace(tzinfo=utc)
+            dt4 = utc.localize(dt4).replace(tzinfo=utc)
+            dt5 = utc.localize(dt5).replace(tzinfo=utc)
+            dt6 = utc.localize(dt6).replace(tzinfo=utc)
+            currentDateTime = utc.localize(currentDateTime).replace(tzinfo=utc)
+            
+            c1=0
+            c2=0
+            c3=0
+            c4=0
+            c5=0
+            c6=0
+            
+            for message in allMessages:
+                if(message.DateTime>=dt1 and message.DateTime<=dt2):
+                    c1 += 1
+                elif (message.DateTime>=dt2 and message.DateTime<=dt3):
+                    c2 += 1
+                elif (message.DateTime>=dt3 and message.DateTime<=dt4):
+                    c3 += 1
+                elif (message.DateTime>=dt4 and message.DateTime<=dt5):
+                    c4 += 1
+                elif (message.DateTime>=dt5 and message.DateTime<=dt6):
+                    c5 += 1
+                elif (message.DateTime>=dt6 and message.DateTime<=currentDateTime):
+                    c6 += 1
+            yAxis = [c1, c2, c3, c4, c5, c6]
+            return Response({"status": "200 OK", "xAxis": xAxis, "yAxis": yAxis})
+        except:
+            return Response({"status": "404 Not Found", "message": "User/Project does not exist"})
