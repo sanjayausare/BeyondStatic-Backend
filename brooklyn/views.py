@@ -357,3 +357,17 @@ class ProjectObjectAPI(APIView):
             return Response({"status": "202 Accepted", "message": "project object deleted successfully."})
         except:
             return Response({"status": "500 Internal Server Error", "message": "database went through an error."})
+        
+class AllMessagesCount(APIView):
+    def get(self, request, username):
+        if validateJWT(request) is False:
+            return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
+        try:
+            thisUser = User.objects.filter(username=username)[0]
+            try:
+                totalMessages = len(ProjectObject.objects.filter(user=thisUser))
+            except:
+                totalMessages = 0
+            return Response({"status": "200 OK", "totalMessageCount": totalMessages})
+        except:
+            return Response({"status": "404 Not Found", "message": "User does not exist"})

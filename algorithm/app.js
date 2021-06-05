@@ -62,7 +62,7 @@ const encryptAndSend = (username, projectID, field1='', field2='', field3='', fi
     }
 
     let encURL = encUsername + "zlatan" + encProjectID + "zlatan" + encField1 + "zlatan" + encField2 + "zlatan" + encField3 + "zlatan" + encField4 + "zlatan" + encField5;
-    encURL = "http://127.0.0.1:8000/api/addInstance/" + encURL;
+    encURL = "http://192.168.0.104:8000/api/addInstance/" + encURL;
 
     // let a = document.createElement('a');
     // a.id = "sendMeMessage";
