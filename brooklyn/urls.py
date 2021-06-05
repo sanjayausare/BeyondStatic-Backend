@@ -11,5 +11,6 @@ urlpatterns = [
     path('api/addInstance/<str:message>', AddInstanceAPI.as_view(), name='AddInstanceAPI'),
     path('api/projectobjects/<int:projectID>', ProjectObjectsAPI.as_view(), name='ProjectObjectsAPI'),
     path('api/projectobject/<int:projectobjectID>', ProjectObjectAPI.as_view(), name='ProjectObjectAPI'),
-    path('api/allmessagescount/<str:username>', AllMessagesCount.as_view(), name='AllMessagesCount')
+    path('api/allmessagescount/<str:username>', AllMessagesCountAPI.as_view(), name='AllMessagesCountAPI'),
+    path('api/chartdata/<str:username>', ChartDataAPI.as_view(), name='ChartDataAPI')
 ]
