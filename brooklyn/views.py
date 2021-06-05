@@ -499,3 +499,27 @@ class LastDayMessagesCountAPI(APIView):
             return Response({"status": "200 OK", "count": c1})
         except:
             return Response({"status": "404 Not Found", "message": "User does not exist"})
+        
+class LastDayMessagesCountProjectAPI(APIView):
+    def get(self, request, username, projectID):
+        if validateJWT(request) is False:
+            return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
+        
+        # get all instances
+        try:    
+            thisUser = User.objects.filter(username=username)[0]
+            thisProject = Project.objects.filter(id=projectID)[0]
+            allMessages = ProjectObject.objects.filter(user=thisUser, Project=thisProject)
+            currentDateTime = datetime.now()
+            dt1 = currentDateTime - timedelta(1)
+            dt1 = utc.localize(dt1).replace(tzinfo=utc)
+            currentDateTime = utc.localize(currentDateTime).replace(tzinfo=utc)
+            
+            c1=0
+            
+            for message in allMessages:
+                if (message.DateTime>=dt1 and message.DateTime<=currentDateTime):
+                    c1 += 1
+            return Response({"status": "200 OK", "count": c1})
+        except:
+            return Response({"status": "404 Not Found", "message": "User does not exist"})
