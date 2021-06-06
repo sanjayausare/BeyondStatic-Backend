@@ -540,7 +540,17 @@ class DeleteMessagesAPI(APIView):
             
         return Response({"status": "203 OK", "message": "messages deleted successfully"})
         
-        
-            
-        
-        
+class CheckProjectAPI(APIView):
+    def post(self, request, projectID):
+        if validateJWT(request) is False:
+            return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
+        try:
+            thatProject = Project.objects.filter(id=projectID)[0]
+            thatUsername = request.data['username']
+            thatUser = User.objects.filter(username=thatUsername)[0]
+            if thatProject.user == thatUser:
+                return Response({"status": True})
+            else:
+                return Response({"status": False})
+        except:
+            return Response({"status": False})
