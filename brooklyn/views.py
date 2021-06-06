@@ -523,3 +523,24 @@ class LastDayMessagesCountProjectAPI(APIView):
             return Response({"status": "200 OK", "count": c1})
         except:
             return Response({"status": "404 Not Found", "message": "User does not exist"})
+        
+class DeleteMessagesAPI(APIView):
+    def post(self, request, projectID):
+        if validateJWT(request) is False:
+            return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
+        
+        messageList = request.data['messageList']
+        try:
+            thatProject = Project.objects.filter(id=projectID)[0]
+        except:
+            return Response({"status": "404 Not Found", "message": "project does not exist"})
+        
+        for messageID in messageList:
+            ProjectObject.objects.filter(id=messageID).delete()
+            
+        return Response({"status": "203 OK", "message": "messages deleted successfully"})
+        
+        
+            
+        
+        

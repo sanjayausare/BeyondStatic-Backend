@@ -15,5 +15,7 @@ urlpatterns = [
     path('api/chartdata/<str:username>', ChartDataAPI.as_view(), name='ChartDataAPI'),
     path('api/projectchartdata/<str:username>/<int:projectID>', ProjectChartDataAPI.as_view(), name="ProjectChartDataAPI"),
     path('api/lastdaymessagescount/<str:username>', LastDayMessagesCountAPI.as_view(), name="LastDayMessagesCountAPI"),
-    path('api/projectlastdaymessagescount/<str:username>/<int:projectID>', LastDayMessagesCountProjectAPI.as_view(), name="LastDayMessagesCountProjectAPI")
+    path('api/projectlastdaymessagescount/<str:username>/<int:projectID>', LastDayMessagesCountProjectAPI.as_view(), name="LastDayMessagesCountProjectAPI"),
+    path('api/deletemessages/<int:projectID>', DeleteMessagesAPI.as_view(), name="DeleteMessagesAPI")
+    
 ]
