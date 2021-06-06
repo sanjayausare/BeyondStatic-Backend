@@ -192,11 +192,28 @@ class ProjectAPI(APIView):
             return Response({"status": "404 Not Found", "message": "username does not exist."})
         
 class ProjectInstanceAPI(APIView):
-    def get(self, request, id):
+    def get(self, request, id, username):
         if validateJWT(request) is False:
             return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
         try:
             reqProject = Project.objects.filter(id=id)[0]
+            thatUser = User.objects.filter(username=username)[0]
+            if reqProject.user != thatUser:
+                resp = {
+                    "id": 0,
+                    "ProjectName": "",
+                    "username": "",
+                    "EndpointURL": "",
+                    "Field1Name": "",
+                    "Field2Name": "",
+                    "Field3Name": "",
+                    "Field4Name": "",
+                    "Field5Name": "",
+                    "ProjectStatus": False,
+                    "Description": "",
+                    "totalMessages": 0
+                }
+                return Response(resp)
         except:
             return Response({"status": "404 Not Found", "message": "project does not exist."})
         try:
@@ -219,11 +236,31 @@ class ProjectInstanceAPI(APIView):
         }
         return Response(resp)
     
-    def put(self, request, id):
+    def put(self, request, id, username):
         if validateJWT(request) is False:
             return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
         if (len(Project.objects.filter(id=id))) == 0:
             return Response({"status": "404 Not Found", "message": "project does not exist."})
+        
+        reqProject = Project.objects.filter(id=id)[0]
+        thatUser = User.objects.filter(username=username)[0]
+        if reqProject.user != thatUser:
+            resp = {
+                "id": 0,
+                "ProjectName": "",
+                "username": "",
+                "EndpointURL": "",
+                "Field1Name": "",
+                "Field2Name": "",
+                "Field3Name": "",
+                "Field4Name": "",
+                "Field5Name": "",
+                "ProjectStatus": False,
+                "Description": "",
+                "totalMessages": 0
+            }
+            return Response(resp)
+        
         ProjectName = request.data['ProjectName']
         EndpointURL = request.data['EndpointURL']
         Field1Name = request.data['Field1Name']
@@ -250,9 +287,29 @@ class ProjectInstanceAPI(APIView):
         }
         return Response(resp)
     
-    def delete(self, request, id):
+    def delete(self, request, id, username):
         if validateJWT(request) is False:
             return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
+        
+        reqProject = Project.objects.filter(id=id)[0]
+        thatUser = User.objects.filter(username=username)[0]
+        if reqProject.user != thatUser:
+            resp = {
+                "id": 0,
+                "ProjectName": "",
+                "username": "",
+                "EndpointURL": "",
+                "Field1Name": "",
+                "Field2Name": "",
+                "Field3Name": "",
+                "Field4Name": "",
+                "Field5Name": "",
+                "ProjectStatus": False,
+                "Description": "",
+                "totalMessages": 0
+            }
+            return Response(resp)
+            
         if (len(Project.objects.filter(id=id))) == 0:
             return Response({"status": "404 Not Found", "message": "project does not exist."})
         try:
@@ -304,9 +361,14 @@ class AddInstanceAPI(APIView):
     
 
 class ProjectObjectsAPI(APIView):
-    def get(self, request, projectID):
+    def get(self, request, projectID, username):
         if validateJWT(request) is False:
             return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
+        reqProject = Project.objects.filter(id=projectID)[0]
+        thatUser = User.objects.filter(username=username)[0]
+        if reqProject.user != thatUser:
+            projectID = 0
+            username = ""
         try:
             thatProject = Project.objects.filter(id=projectID)[0]
         except:
@@ -329,7 +391,7 @@ class ProjectObjectsAPI(APIView):
         return Response(requiredInstances)
     
 class ProjectObjectAPI(APIView):
-    def get(self, request, projectobjectID):
+    def get(self, request, projectobjectID, username):
         if validateJWT(request) is False:
             return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
         try:
@@ -349,11 +411,15 @@ class ProjectObjectAPI(APIView):
         }
         return Response(resp)
     
-    def delete(self, request, projectobjectID):
+    def delete(self, request, projectobjectID, username):
         if validateJWT(request) is False:
             return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
         if len(ProjectObject.objects.filter(id=projectobjectID)) == 0:
             return Response({"status": "404 Not Found", "message": "project object does not exist."})
+        thatProj = ProjectObject.objects.filter(id=projectobjectID)[0].Project.user
+        thatUser = User.objects.filter(username=username)[0]
+        if thatProj != thatUser:
+            return Response({"status": "500 Internal Server Error", "message": "database went through an error."})
         try:
             ProjectObject.objects.filter(id=projectobjectID).delete()
             return Response({"status": "202 Accepted", "message": "project object deleted successfully."})
@@ -525,9 +591,14 @@ class LastDayMessagesCountProjectAPI(APIView):
             return Response({"status": "404 Not Found", "message": "User does not exist"})
         
 class DeleteMessagesAPI(APIView):
-    def post(self, request, projectID):
+    def post(self, request, projectID, username):
         if validateJWT(request) is False:
             return Response({"status": "401 Unauthorized", "message": "authentication token invalid."})
+        
+        thatProj = Project.objects.filter(id=projectID)[0].user
+        thatUser = User.objects.filter(username=username)[0]
+        if thatProj != thatUser:
+            return Response({"status": "500 Internal Server Error", "message": "database went through an error."})
         
         messageList = request.data['messageList']
         try:
